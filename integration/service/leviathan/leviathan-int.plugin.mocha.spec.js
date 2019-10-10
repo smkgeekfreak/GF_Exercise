@@ -72,7 +72,7 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
     expect(response.payload).to.include.keys(['userId', 'completed']);
   });
 
-  it('Call plugin getEmployees', async () => {
+  it.skip('Call plugin getEmployees', async () => {
     const TestManifest= {
       server:   {
         host: '127.0.0.1',
@@ -104,7 +104,7 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
 //    expect(response.payload).to.include.keys(['userId', 'completed']);
   });
 
-  it('Call plugin getEmployeesWeb (Internal api call)', async () => {
+  it.skip('Call plugin getEmployeesWeb (Internal api call)', async () => {
     const TestManifest= {
       server:   {
         host: '127.0.0.1',
