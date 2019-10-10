@@ -3,6 +3,10 @@ const Joi = require('@hapi/joi');
 const pkg = require('./package');
 const Wreck = require('@hapi/wreck');
 
+/**
+ * Temporary solution to give server logger to route setup functions
+ */
+let _server;
 //TODO: could move route definitions to separate files to reduce clutter
 /**
  * Route defintions
@@ -83,7 +87,6 @@ const getEmployees = (routeOptions) => {
   }
 }
 
-let _server;
 const register = async (server, options) => {
   _server = server;
   server.logger().debug(JSON.stringify(options))

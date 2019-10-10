@@ -19,7 +19,14 @@ const register = async (server, options) => {
       }
       server.logger().debug(`expose a wreck with  ${JSON.stringify(data)}`)
       const employeeWriter = new WriteRepo({writeModel: options.writeModel});
-      await employeeWriter.create({name: "my name"});
+      await employeeWriter.create({
+        email:'shawn@hired.com',
+        id:' d643e381-df8c-43b2-844e-d816baca5828',
+        role:'new employee',
+        telephone: '615-540-4550',
+        lastName:  'aname',
+        firstName:'bname'
+      });
       //
       // TODO: Send event for employee added
       // emit('Employee.Added', { data })

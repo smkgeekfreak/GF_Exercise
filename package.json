@@ -17,7 +17,8 @@
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
     "nyc": "^14.1.1",
-    "sinon": "^7.5.0"
+    "sinon": "^7.5.0",
+    "env-cmd": "^10.0.1"
   },
   "dependencies": {
     "@hapi/glue": "^6.2.0",
@@ -26,8 +27,8 @@
     "@hapi/podium": "^3.4.2",
     "@hapi/wreck": "^15.1.0",
     "dotenv": "^8.1.0",
-    "env-cmd": "^10.0.1",
     "laabr": "^5.1.2",
+    "mongoose": "^5.7.4",
     "uuid": "^3.3.3"
   }
 }

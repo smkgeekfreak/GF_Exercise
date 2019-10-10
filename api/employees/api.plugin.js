@@ -4,6 +4,12 @@ const pkg = require('./package');
 const Wreck = require('@hapi/wreck');
 const WriteRepo = require('../../repo/writeRepo')
 
+/**
+ * Temporary fix to store server and service for use outside register. There's
+ * a better way to do this but it will take a little rework
+ */
+let _service;
+let _server;
 //TODO: could move route definitions to separate files to reduce clutter
 /**
  * Route defintions
@@ -81,15 +87,20 @@ const addEmployee= (routeOptions) => {
         request.log('debug',"add employee handler");
         request.log('debug',routeOptions);
         const employeeWriter = new WriteRepo({writeModel: routeOptions.writeModel});
-        await employeeWriter.create({name: "my name"});
+        await employeeWriter.create({
+          email:'phoenixapi@hired.com',
+          id:' d643e381-df8c-43b2-844e-d816baca5828',
+          role:'new employee',
+          telephone: '615-540-4550',
+          lastName:  'phoenix',
+          firstName:'employees endpoint'
+        });
         return 'success';
       }
     },
   }
 }
 
-let _service;
-let _server;
 const register = async (server, options) => {
   _server = server;
   server.logger().debug('register')

@@ -46,7 +46,7 @@ describe(`Employees Writes - Phoenix API Plugin Unit Testing`, ()=> {
               prefix: '/employees'
             },
             options: {
-              writeModel: require('../../repo/employeeWriteDB'),
+              writeModel: new(require('../../repo/employeeWriterDB'))(Logger),
               service: require('../../integration/service/leviathan')
             }
           },
