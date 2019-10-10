@@ -9,17 +9,18 @@ const Wreck = require('@hapi/wreck');
  * @returns {Promise<void>}
  */
 const register = async (server, options) => {
-  console.log(`options = ${JSON.stringify(options)}`)
+  server.log('info', "this");
+  server.logger().debug(`options = ${JSON.stringify(options)}`)
 
   await server.register(require('@hapi/h2o2'), { once: true });
 
   await server.expose('getEmployees', async (data) => {
     try {
-      console.log(`expose a wreck with ${options.name} with ${JSON.stringify(data)}`)
+      server.logger().debug(`expose a wreck with ${options.name} with ${JSON.stringify(data)}`)
       const { res, payload } = await Wreck.get(`https://leviathan.challenge.growflow.com/employee/?ApiUser=CHALLENGEUSER&ApiKey=CHALLENGEKEY`, {
         json:true
       })
-//      console.log(`body: ${JSON.stringify(payload)}`);
+//      server.logger().debug(`body: ${JSON.stringify(payload)}`);
       switch (res.statusCode) {
         case 200 : return ({statusCode:res.statusCode, payload:payload})
         default: throw new Error(`${res.statusCode} returned from  ${pkg.name}`)
@@ -32,7 +33,7 @@ const register = async (server, options) => {
 
   await server.expose('getEmployeesWeb', async (data) => {
     try {
-      console.log(`expose an inject soultion for ${pkg.name} with ${JSON.stringify(data)}`)
+      server.logger().debug(`expose an inject soultion for ${pkg.name} with ${JSON.stringify(data)}`)
       const response = await server.inject({
         method: 'GET',
         url:    '/internal/levi/employees',
@@ -43,9 +44,9 @@ const register = async (server, options) => {
         }
       }, );
 
-      console.log("internal call returned:")
-      console.log(response.result);
-//      console.log(`body: ${JSON.stringify(response.result)}`);
+      server.logger().debug("internal call returned:")
+      server.logger().debug(response.result);
+//      server.logger().debug(`body: ${JSON.stringify(response.result)}`);
       switch (response.statusCode) {
         case 200 : return response.result
 //        case 403 : return {statusCode: 402, payload:"Invalid auth"}
@@ -63,7 +64,7 @@ const register = async (server, options) => {
   });
 
   await server.expose('describe', async () => {
-    console.log(`expose yourself to something else in ${options.name}`)
+    server.logger().debug(`expose yourself to something else in ${options.name}`)
     return {}
   });
 };

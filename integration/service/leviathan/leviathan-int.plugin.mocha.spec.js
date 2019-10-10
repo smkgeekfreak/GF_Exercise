@@ -1,9 +1,12 @@
+const pkgName = require('./package.json').name
+const dotenv = require('dotenv').config({path:'../../.env'});
+const Logger = require('../../../logger')(pkgName+"-test",process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL)
 const expect = require('chai').expect;
 const Glue = require('@hapi/glue');
 
 const getServer = async (manifest) => {
-  console.log(`Composing server in ${__dirname} ` );
-  console.log(`Manifest Destiny: ${JSON.stringify(manifest)}`);
+  Logger.debug(`Composing server in ${__dirname} ` );
+  Logger.debug(`Manifest Destiny: ${JSON.stringify(manifest)}`);
   const server = await Glue.compose(manifest,{relativeTo:__dirname});
 //  getServer = () => {
 //    return server;
@@ -15,7 +18,7 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
 
   it('Load from index ', async () => {
     const leviathanPlugin = require('.');
-    console.log(`Plugins: ${JSON.stringify(leviathanPlugin)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(leviathanPlugin)}`);
     expect(leviathanPlugin.pkg.name).to.exist;
     expect(leviathanPlugin.pkg.name).to.equal('Integration.Service.Leviathan');
   });
@@ -29,6 +32,23 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
       register: {
         plugins: [
           {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
+          {
             plugin:  './index.js',
           },
         ]
@@ -36,8 +56,9 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
     };
 
     const server = await getServer(TestManifest);
-//    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+//    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     expect(server.plugins).to.include.keys(['Integration.Service.Leviathan'] );
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Check the plugin exposes a 'describe' method
     expect(server.plugins[require('./package.json').name]).to.include.keys(['describe'] );
 //    expect(server.plugins[require('./package.json').name]).to.have.keys(['describe'] );
@@ -52,6 +73,23 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
       register: {
         plugins: [
           {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
+          {
             plugin:  './index.js',
           },
         ]
@@ -59,15 +97,16 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
     };
     const pkgName = require('./package.json').name
     const server = await getServer(TestManifest);
-    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     // Should have the plugin loaded
     expect(server.plugins).to.include.property(pkgName);
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Plugin should have the util method
 
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
 
     const response = await server.plugins[pkgName].asyncReqWithData({id:2});
-    console.log(`resp: ${JSON.stringify(response.statusCode)}`);
+    Logger.debug(`resp: ${JSON.stringify(response.statusCode)}`);
     expect(response.statusCode).to.equal(200);
     expect(response.payload).to.include.keys(['userId', 'completed']);
   });
@@ -81,6 +120,23 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
       register: {
         plugins: [
           {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
+          {
             plugin:  './index.js',
           },
         ]
@@ -88,16 +144,17 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
     };
     const pkgName = require('./package.json').name
     const server = await getServer(TestManifest);
-    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     // Should have the plugin loaded
     expect(server.plugins).to.include.property(pkgName);
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Plugin should have the util method
 
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
     expect(server.plugins[pkgName]).to.include.keys(['getEmployees']);
 
     const response = await server.plugins[pkgName].getEmployees();
-    console.log(`resp: ${JSON.stringify(response.payload,null, 2)}`);
+    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
     expect(response.statusCode).to.equal(200);
     expect(response.payload.length).to.be.gt(0);
     expect(response.payload[0]).to.include.keys(['email', 'id','role', 'telephone','lastName','firstName']);
@@ -112,6 +169,23 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
       },
       register: {
         plugins: [
+          {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
           {
             plugin:  '../../api/levi/index.js',
 //            dependencies: '@hapi/h2o2',
@@ -135,19 +209,20 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
     };
     const pkgName = require('./package.json').name
     const server = await getServer(TestManifest);
-    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     // Should have the plugin loaded
 //    expect(server.plugins).to.include.property(pkgName);
     expect(server.plugins).to.include.keys([pkgName,'Integration.API.Leviathan','h2o2'] );
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Plugin should have the util method
 
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
     expect(server.plugins[pkgName]).to.include.keys(['getEmployeesWeb']);
 
     const response = await server.plugins[pkgName].getEmployeesWeb();
-//    console.log(`resp: ${JSON.stringify(response.payload,null, 2)}`);
-    console.log("got");
-    console.log(response);
+//    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
+    Logger.debug("got");
+    Logger.debug(response);
     expect(response.statusCode).to.equal(200);
     expect(response.payload.length).to.be.gt(0);
     expect(response.payload[0]).to.include.keys(['email', 'id','role', 'telephone','lastName','firstName']);

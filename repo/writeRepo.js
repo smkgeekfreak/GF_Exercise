@@ -1,16 +1,17 @@
-function writeRepo (options){
-
+class writeRepo {
+  constructor(options){
     if (!options || !options.writeModel) {
       throw new Error('Options.writeModel is required');
     }
     this.writeModel = options.writeModel
+   }
 
-  this.create = async function(data) {
-      console.log("writeRepo:create")
+  async create (data) {
+//      options.logger.debug("writeRepo:create")
       return await this.writeModel.create(data);
   }
 
-  this.update = async function (data) {
+  async update (data) {
       return await this.writeModel.update(data)
   }
 

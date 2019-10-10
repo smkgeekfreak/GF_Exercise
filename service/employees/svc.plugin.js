@@ -5,7 +5,7 @@ const Wreck = require('@hapi/wreck');
 const WriteRepo = require('../../repo/writeRepo')
 
 const register = async (server, options) => {
-  console.log(`options = ${JSON.stringify(options)}`)
+  server.logger().debug(`options = ${JSON.stringify(options)}`)
   //TODO: Add routeOptions validate for writeModel
   if (!options || !options.writeModel) {
     throw new Error('routeOptions must include writeModel ');
@@ -17,7 +17,7 @@ const register = async (server, options) => {
       if (!options || !options.writeModel) {
         throw new Error('routeOptions must include writeModel ');
       }
-      console.log(`expose a wreck with  ${JSON.stringify(data)}`)
+      server.logger().debug(`expose a wreck with  ${JSON.stringify(data)}`)
       const employeeWriter = new WriteRepo({writeModel: options.writeModel});
       await employeeWriter.create({name: "my name"});
       //
@@ -26,13 +26,13 @@ const register = async (server, options) => {
       return 'success';
     } catch (writerError) {
       // emit('Employee.AddFailed', { data }) ???
-      console.log(writerError);
+      server.logger().debug(writerError);
     }
   });
 
   await server.expose('getEmployeesWeb', async (data) => {
     try {
-      console.log(`expose an inject soultion for ${pkg.name} with ${JSON.stringify(data)}`)
+      server.logger().debug(`expose an inject soultion for ${pkg.name} with ${JSON.stringify(data)}`)
       const response = await server.inject({
         method: 'GET',
         url:    '/internal/levi/employees',
@@ -43,9 +43,9 @@ const register = async (server, options) => {
         }
       }, );
 
-      console.log("internal call returned:")
-      console.log(response.result);
-//      console.log(`body: ${JSON.stringify(response.result)}`);
+      server.logger().debug("internal call returned:")
+      server.logger().debug(response.result);
+//      server.logger().debug(`body: ${JSON.stringify(response.result)}`);
       switch (response.statusCode) {
         case 200 : return response.result
 //        case 403 : return {statusCode: 402, payload:"Invalid auth"}
@@ -63,7 +63,7 @@ const register = async (server, options) => {
   });
 
   await server.expose('describe', async () => {
-    console.log(`expose yourself to something else in ${options.name}`)
+    server.logger().debug(`expose yourself to something else in ${options.name}`)
     return {}
   });
 };

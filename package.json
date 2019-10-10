@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon -e js,json,.env server.js",
     "mocha-cov": "nyc mocha './**/*.mocha.spec.js'",
-    "mocha": "mocha --reporter spec './**/*.mocha.spec.js' --watch",
-    "test": "mocha --reporter spec './**/*.mocha.spec.js'"
+    "mocha": "env-cmd mocha --reporter spec './**/*.mocha.spec.js' --watch",
+    "test": "env-cmd mocha --reporter spec './**/*.mocha.spec.js'"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,8 @@
     "@hapi/podium": "^3.4.2",
     "@hapi/wreck": "^15.1.0",
     "dotenv": "^8.1.0",
+    "env-cmd": "^10.0.1",
+    "laabr": "^5.1.2",
     "uuid": "^3.3.3"
   }
 }
