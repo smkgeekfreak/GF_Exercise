@@ -1,8 +1,8 @@
 const  expect = require('chai').expect;
 const Podium = require('@hapi/podium');
+const Logger = require('../logger')('eventstore-test',process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL);
 
 describe('eventStore-sample', async () => {
-
 
   it('Local Emit Event', async () => {
     const emitterStore = new Podium('eventOccurred');
@@ -11,15 +11,15 @@ describe('eventStore-sample', async () => {
     const once = emitterStore.once('eventOccurred');
     const emitterSource = new Podium([emitterStore,emitter]);
     emitterSource.on('eventOccurred', (data) => {
-      console.log("called "+ Date.now())
+      Logger.debug("called "+ Date.now())
       _eventStore.push({event: data, stamp: Date.now()});
     });
     await emitterStore.emit('eventOccurred', JSON.stringify({name:"userAddRequested", payload:{user: {name:'shawn'}}}));
 
     await emitterSource.emit('eventOccurred', JSON.stringify({name:"userAddRequested", payload:{user: {name:'source'}}}));
-    console.log(_eventStore);
+    Logger.debug(_eventStore);
     await emitter.emit('eventOccurred', JSON.stringify({name:"userAddRequested", payload:{user: {name:'ansley'}}}));
-    console.log(_eventStore);
+    Logger.debug(_eventStore);
   });
   it('combines multiple sources', async () => {
 
@@ -33,7 +33,7 @@ describe('eventStore-sample', async () => {
     let counter = 0;
     emitter.on('test', (data) => {
 
-      console.log('called ' + Date.now());
+      Logger.debug('called ' + Date.now());
       ++counter;
       expect(data).to.equal(1);
     });
@@ -61,7 +61,7 @@ describe('eventStore-sample', async () => {
   it('Emit Event', async () => {
 //    const server = await getServer();
 
-//    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+//    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
 //    expect(server.plugins).to.have.keys(['Leviathan API', 'PhoenixProxy','PhoenixUserProxy'] );
 
     const EventStore = await require('./eventStore');
@@ -73,15 +73,15 @@ describe('eventStore-sample', async () => {
 //    emitterStore.emit('eventOccurred', 123);
 //    await emitterStore.emit('eventOccurred', 456);
 //    const [result] = await once;
-//    console.log(result);
+//    Logger.debug(result);
 //    emitterSource.on('eventOccurred', (data) => {
-//      console.log("called "+ Date.now())
+//      Logger.debug("called "+ Date.now())
 //      _eventStore.push({event: data, stamp: Date.now()});
 //    });
     await emitterStore.emit('eventOccurred', JSON.stringify({name:"userAddRequested", payload:{user: {name:'shawn'}}}));
-//    console.log(_eventStore);
+//    Logger.debug(_eventStore);
     await emitter.emit('eventOccurred', JSON.stringify({name:"userAddRequested", payload:{user: {name:'ansley'}}}));
-    console.log(EventStore.Store);
+    Logger.debug(EventStore.Store);
   });
 
   it('Add external event', async () => {
@@ -91,10 +91,10 @@ describe('eventStore-sample', async () => {
     const emitter = new Podium(['eventOccurred']);
 
     const newEventHandler = async () => {
-      console.log ("called newEventHandler")
+      Logger.debug ("called newEventHandler")
     }
     const newEventHandler2 = async () => {
-      console.log ("called newEventHandler2")
+      Logger.debug ("called newEventHandler2")
     }
 
     await EventStore.registerPodium(emitterStore);
@@ -103,19 +103,19 @@ describe('eventStore-sample', async () => {
     await EventStore.registerNewChannel('newEvent', {}, newEventHandler);
     emitter.registerEvent('newEvent');
 //    emitter.on('newEvent', (data)=>{
-//      console.log("emitter new Event");
+//      Logger.debug("emitter new Event");
 //    })
     await emitterStore.emit('eventOccurred', {name:"userAddRequested", payload:{user: {name:'shawn'}}});
-//    console.log(_eventStore);
+//    Logger.debug(_eventStore);
     await emitter.emit('eventOccurred', {name:"userAddRequested", payload:{user: {name:'ansley'}}});
-    console.log(JSON.stringify(EventStore.Store,null, 2));
+    Logger.debug(JSON.stringify(EventStore.Store,null, 2));
     await emitter.emit('newEvent',  {name:"userSuspended", payload:{user: {name:'parkey'}}});
 
     await EventStore.registerNewChannel('newEvent2', {}, newEventHandler2);
     emitter.registerEvent('newEvent2');
     await emitter.emit('newEvent2',  {name:"userApproved", payload:{user: {name:'shockey'}}});
-    console.log(JSON.stringify(EventStore.Store,null, 2));
+    Logger.debug(JSON.stringify(EventStore.Store,null, 2));
     await EventStore.emit('newEvent2', {name:"userAddRequested", payload:{user: {name:'shawn'}}});
-    console.log(JSON.stringify(EventStore.Store,null, 2));
+    Logger.debug(JSON.stringify(EventStore.Store,null, 2));
   });
 });

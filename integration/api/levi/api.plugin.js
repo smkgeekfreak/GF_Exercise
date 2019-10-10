@@ -15,10 +15,10 @@ const pingRoute = (routeOptions) => {
     method:  'GET',
     path:    '/ping',
     options: {
-      isInternal:false, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
+      isInternal:  false, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
       description: `Returns ping for ${pkg.name}`,
       notes:       "Returns a ping response",
-      tags:        ['internal','api'], // include 'api' tag to show in swagger
+      tags:        ['internal', 'api'], // include 'api' tag to show in swagger
       handler:     function (request, h) {
         return {"info": {version: pkg.version}, "message": "PONG"};
       },
@@ -58,22 +58,20 @@ const getEmployees = (routeOptions) => {
       handler: {
         proxy: {
 //          passThrough: true, //
-          mapUri: function (request) {
-            console.log('doing some additional stuff before redirecting');
+          mapUri:     function (request) {
+            _server.logger().debug('doing some additional stuff before redirecting');
             let {path, headers} = request;
             const uri = `${routeOptions.baseURL}/employee/?ApiUser=${headers.apiuser}&ApiKey=${headers.apikey}`
-            console.log(uri)
+            _server.logger().info(uri)
             return {
               uri: uri
             }
           },
           onResponse: async function (err, res, request, h, settings, ttl) {
             let {headers} = request;
-//            console.log(headers)
-            console.log('receiving the response from the upstream.');
-            const payload = await Wreck.read(res, {json:true, timeout:500});
-//            console.log(payload);
-            return {statusCode:res.statusCode, payload:payload, headers:res.headers};
+            _server.logger().debug('receiving the response from the upstream.');
+            const payload = await Wreck.read(res, {json: true, timeout: 500});
+            return {statusCode: res.statusCode, payload: payload, headers: res.headers};
 //              const response = h.response(payload);
 //              response.headers = res.headers;
 //              return response;
@@ -84,30 +82,14 @@ const getEmployees = (routeOptions) => {
     },
   }
 }
-//const createOrderRoute = (routeOptions) => {
-//  //TODO: Add routeOptions validate for writeModel
-//  if (!routeOptions || !routeOptions.writeModel) {
-//    throw new Error('routeOptions must include writeModel ');
-//  }
-//  return {
-//    method:  'POST',
-//    path:    '/',
-//    options: {
-//      tags:    ['api', 'post'],
-//      handler: async function (request, h) {
-//        const orderWriter = new writeModel({userDB: routeOptions.writeModel});
-//        await orderWriter.create({name: "my name"});
-//        return h.response().code(200);
-//      }
-//    },
-//  }
-//}
 
+let _server;
 const register = async (server, options) => {
+  _server = server;
   server.logger().debug(JSON.stringify(options))
   let routes = [];
   //Push all
-  await server.register(require('@hapi/h2o2'), { once: true });
+  await server.register(require('@hapi/h2o2'), {once: true});
   routes.push(pingRoute());
   routes.push(getEmployees(options));
 //  routes.push(createOrderRoute({writeModel:options.writeModel}));
@@ -120,7 +102,7 @@ const register = async (server, options) => {
   });
 }
 
-function ApiPlugin (pkg) {
+function ApiPlugin(pkg) {
   return {
     pkg:      pkg,
     register: register,
