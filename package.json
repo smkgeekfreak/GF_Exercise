@@ -23,7 +23,9 @@
     "@hapi/glue": "^6.2.0",
     "@hapi/h2o2": "^8.3.2",
     "@hapi/hapi": "^18.4.0",
+    "@hapi/podium": "^3.4.2",
     "@hapi/wreck": "^15.1.0",
-    "dotenv": "^8.1.0"
+    "dotenv": "^8.1.0",
+    "uuid": "^3.3.3"
   }
 }
