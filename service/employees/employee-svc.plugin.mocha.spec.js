@@ -1,10 +1,12 @@
+const pkgName = require('./package.json').name
+const dotenv = require('dotenv').config({path:'../../.env'});
+const Logger = require('../../logger')(pkgName+"-test",process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL);
 const expect = require('chai').expect;
 const Glue = require('@hapi/glue');
-const pkg = require('./package');
 
 const getServer = async (manifest) => {
-  console.log(`Composing server in ${__dirname} ` );
-  console.log(`Manifest Destiny: ${JSON.stringify(manifest)}`);
+  Logger.debug(`Composing server in ${__dirname} ` );
+  Logger.debug(`Manifest Destiny: ${JSON.stringify(manifest)}`);
   const server = await Glue.compose(manifest,{relativeTo:__dirname});
 //  getServer = () => {
 //    return server;
@@ -16,7 +18,7 @@ describe(`Employee Service Plugin Testing`, ()=> {
 
   it('Load from index ', async () => {
     const svcPlugin = require('.');
-    console.log(`Plugins: ${JSON.stringify(svcPlugin)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(svcPlugin)}`);
     expect(svcPlugin.pkg.name).to.exist;
     expect(svcPlugin.pkg.name).to.equal('Service.Employees');
   });
@@ -30,29 +32,22 @@ describe(`Employee Service Plugin Testing`, ()=> {
       register: {
         plugins: [
           {
-            plugin:  './index.js',
+            plugin: 'laabr',
             options: {
-              writeModel: require('../../repo/employeeWriteDB'),
-            }
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
           },
-        ]
-      },
-    };
-
-    const server = await getServer(TestManifest);
-    expect(server.plugins).to.include.keys([pkg.name] );
-    // Check the plugin exposes a 'describe' method
-    expect(server.plugins[pkg.name]).to.include.keys(['describe'] );
-  });
-
-  it('Call plugin getEmployees', async () => {
-    const TestManifest= {
-      server:   {
-        host: '127.0.0.1',
-        port: 3009
-      },
-      register: {
-        plugins: [
           {
             plugin:  './index.js',
             options: {
@@ -62,18 +57,61 @@ describe(`Employee Service Plugin Testing`, ()=> {
         ]
       },
     };
-    const pkgName = require('./package.json').name
+
     const server = await getServer(TestManifest);
-    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+    expect(server.plugins).to.include.keys([pkgName] );
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
+    // Check the plugin exposes a 'describe' method
+    expect(server.plugins[pkgName]).to.include.keys(['describe'] );
+  });
+
+  it('Call plugin getEmployees', async () => {
+    const TestManifest= {
+      server:   {
+        host: '127.0.0.1',
+        port: 3009
+      },
+      register: {
+
+        plugins: [
+          {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
+          {
+            plugin:  './index.js',
+            options: {
+              writeModel: require('../../repo/employeeWriteDB'),
+            }
+          },
+        ]
+      },
+    };
+    const server = await getServer(TestManifest);
+    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     // Should have the plugin loaded
     expect(server.plugins).to.include.property(pkgName);
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Plugin should have the util method
 
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
     expect(server.plugins[pkgName]).to.include.keys(['addEmployees']);
 
     const response = await server.plugins[pkgName].addEmployees({"name":"my"});
-    console.log(`resp: ${JSON.stringify(response.payload,null, 2)}`);
+    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
 //    expect(response.statusCode).to.equal(200);
 //    expect(response.payload.length).to.be.gt(0);
 //    expect(response.payload[0]).to.include.keys(['email', 'id','role', 'telephone','lastName','firstName']);
@@ -88,6 +126,23 @@ describe(`Employee Service Plugin Testing`, ()=> {
       },
       register: {
         plugins: [
+          {
+            plugin: 'laabr',
+            options: {
+//            formats: { onPostStart: ':time :start :level :message :host' },
+              override:false,
+              pino: {
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+              },
+              colored:true,
+              formats: {
+                onPostStart: 'server.info',
+                log:':time :level :test :message'
+              },
+              tokens: { test:  () => '[test]' },
+              indent: 1
+            },
+          },
           {
             plugin:  '../../api/levi/index.js',
 //            dependencies: '@hapi/h2o2',
@@ -109,21 +164,21 @@ describe(`Employee Service Plugin Testing`, ()=> {
         ]
       },
     };
-    const pkgName = require('./package.json').name
     const server = await getServer(TestManifest);
-    console.log(`Plugins: ${JSON.stringify(server.plugins)}`);
+    Logger.debug(`Plugins: ${JSON.stringify(server.plugins)}`);
     // Should have the plugin loaded
 //    expect(server.plugins).to.include.property(pkgName);
     expect(server.plugins).to.include.keys([pkgName,'Integration.API.Leviathan','h2o2'] );
+    expect(server.registrations).to.include.keys([pkgName,'laabr']);
     // Plugin should have the util method
 
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
     expect(server.plugins[pkgName]).to.include.keys(['getEmployeesWeb']);
 
     const response = await server.plugins[pkgName].getEmployeesWeb();
-//    console.log(`resp: ${JSON.stringify(response.payload,null, 2)}`);
-    console.log("got");
-    console.log(response);
+//    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
+    Logger.debug("got");
+    Logger.debug(response);
     expect(response.statusCode).to.equal(200);
     expect(response.payload.length).to.be.gt(0);
     expect(response.payload[0]).to.include.keys(['email', 'id','role', 'telephone','lastName','firstName']);

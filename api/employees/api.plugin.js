@@ -48,7 +48,8 @@ const pingRoute = (routeOptions) => {
  * @returns {{path: string, method: string, options: {handler: {proxy: {onResponse: (function(*, *=, *, *, *, *): {payload: *, statusCode: *}), mapUri: (function(*): {uri: string})}}, tags: string[]}}}
  */
 const getEmployees = (routeOptions) => {
-  console.log(routeOptions);
+  _server.log('debug','getemployees');
+  _server.log('debug',routeOptions);
   //TODO: Add routeOptions for user/key
   return {
     method:  'GET',
@@ -77,7 +78,8 @@ const addEmployee= (routeOptions) => {
     options: {
       tags:    ['api', 'post'],
       handler: async function (request, h) {
-        console.log("where")
+        request.log('debug',"add employee handler");
+        request.log('debug',routeOptions);
         const employeeWriter = new WriteRepo({writeModel: routeOptions.writeModel});
         await employeeWriter.create({name: "my name"});
         return 'success';
@@ -86,10 +88,13 @@ const addEmployee= (routeOptions) => {
   }
 }
 
-let service;
+let _service;
+let _server;
 const register = async (server, options) => {
-  console.log(options)
-  service = options.service;
+  _server = server;
+  server.logger().debug('register')
+  _server.logger().debug('re-register')
+  _service = options.service;
   await server.register(require('@hapi/h2o2'), { once: true });
   //Push all
   let routes = [];
@@ -100,7 +105,7 @@ const register = async (server, options) => {
   server.route(routes);
 
   await server.expose('describe', async () => {
-    console.log(`expose yourself to something else in ${options.name}`)
+    server.log('debug', `expose yourself to something else in ${options.name}`)
     return {}
   });
 }

@@ -47,7 +47,6 @@ const pingRoute = (routeOptions) => {
  * @returns {{path: string, method: string, options: {handler: {proxy: {onResponse: (function(*, *=, *, *, *, *): {payload: *, statusCode: *}), mapUri: (function(*): {uri: string})}}, tags: string[]}}}
  */
 const getEmployees = (routeOptions) => {
-  console.log(routeOptions);
   //TODO: Add routeOptions for user/key
   return {
     method:  'GET',
@@ -105,6 +104,7 @@ const getEmployees = (routeOptions) => {
 //}
 
 const register = async (server, options) => {
+  server.logger().debug(JSON.stringify(options))
   let routes = [];
   //Push all
   await server.register(require('@hapi/h2o2'), { once: true });
@@ -115,7 +115,7 @@ const register = async (server, options) => {
   server.route(routes);
 
   await server.expose('describe', async () => {
-    console.log(`expose yourself to something else in ${options.name}`)
+    server.logger().debug(`expose yourself to something else in ${options.name}`)
     return {}
   });
 }
