@@ -21,9 +21,11 @@ const register = async (server, options) => {
       const employeeWriter = new WriteRepo({writeModel: options.writeModel});
       await employeeWriter.create({name: "my name"});
       //
-      // Send event for employee added
+      // TODO: Send event for employee added
+      // emit('Employee.Added', { data })
       return 'success';
     } catch (writerError) {
+      // emit('Employee.AddFailed', { data }) ???
       console.log(writerError);
     }
   });
