@@ -1,0 +1,26 @@
+{
+  "name": "phoenix-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -e js,json,.env server.js",
+    "mocha-cov": "nyc mocha './**/*.mocha.spec.js'",
+    "mocha": "mocha --reporter spec './**/*.mocha.spec.js' --watch",
+    "test": "mocha --reporter spec './**/*.mocha.spec.js'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1",
+    "nodemon": "^1.19.3",
+    "nyc": "^14.1.1",
+  },
+  "dependencies": {
+    "@hapi/glue": "^6.2.0",
+    "@hapi/hapi": "^18.4.0",
+    "dotenv": "^8.1.0"
+  }
+}
