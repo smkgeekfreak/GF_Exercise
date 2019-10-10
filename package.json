@@ -17,10 +17,13 @@
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
     "nyc": "^14.1.1",
+    "sinon": "^7.5.0"
   },
   "dependencies": {
     "@hapi/glue": "^6.2.0",
+    "@hapi/h2o2": "^8.3.2",
     "@hapi/hapi": "^18.4.0",
+    "@hapi/wreck": "^15.1.0",
     "dotenv": "^8.1.0"
   }
 }
