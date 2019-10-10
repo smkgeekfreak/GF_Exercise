@@ -53,7 +53,7 @@ describe(`Employees - Phoenix API Plugin Unit Testing`, ()=> {
               prefix: '/employees'
             },
             options: {
-              writeModel: require('../../repo/employeeWriteDB'),
+              writeModel: new(require('../../repo/employeeWriterDB'))(Logger),
             }
           },
 
