@@ -51,7 +51,7 @@ describe(`Employee Service Plugin Testing`, ()=> {
           {
             plugin:  './index.js',
             options: {
-              writeModel: require('../../repo/employeeWriteDB'),
+              writeModel: new(require('../../repo/employeeWriterDB'))(Logger),
             }
           },
         ]
@@ -94,7 +94,7 @@ describe(`Employee Service Plugin Testing`, ()=> {
           {
             plugin:  './index.js',
             options: {
-              writeModel: require('../../repo/employeeWriteDB'),
+              writeModel: new(require('../../repo/employeeWriterDB'))(Logger),
             }
           },
         ]

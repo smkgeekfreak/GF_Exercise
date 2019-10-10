@@ -5,12 +5,35 @@ const writeRepo = require('./writeRepo');
 
 describe('writeRepo Spec', () => {
   it('Load Model', async () => {
+    const eemongo = require('./employeeWriterDB');
+    const eeWriter = new eemongo(Logger, "mongodb://localhost:32768/newtest");
+    await eeWriter.create(      {
+      email:'shawn@hired.com',
+      id:' d643e381-df8c-43b2-844e-d816baca5828',
+      role:'new employee',
+      telephone: '615-540-4550',
+      lastName:  'shawn',
+      firstName:'kirch'
+    });
+  })
+  it.skip('Load Model', async () => {
     const wRepo = new writeRepo({writeModel:new (require('./employeeWriterDB'))(Logger)});
-    expect(await wRepo.create({name:"shawn"})).to.equal('success');
-    expect(await wRepo.create({name:"is"})).to.equal('success');
-    expect(await wRepo.create({name:"the"})).to.equal('success');
-    expect(await wRepo.create({name:"next"})).to.equal('success');
-    expect(await wRepo.create({name:"grow flow employee"})).to.equal('success');
+    const result = wRepo.create(
+      {
+        email:'shawn@hired.com',
+        id:' d643e381-df8c-43b2-844e-d816baca5828',
+        role:'new employee',
+        telephone: '615-540-4550',
+        lastName:  'shawn',
+        firstName:'kirch'
+      });
+
+    Logger.debug(result)
+    expect(result).to.equal('success');
+//    expect(await wRepo.create({name:"is"})).to.equal('success');
+//    expect(await wRepo.create({name:"the"})).to.equal('success');
+//    expect(await wRepo.create({name:"next"})).to.equal('success');
+//    expect(await wRepo.create({name:"grow flow employee"})).to.equal('success');
   });
 
 });
