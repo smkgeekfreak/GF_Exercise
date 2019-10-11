@@ -39,8 +39,8 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
 //            formats: { onPostStart: ':time :start :level :message :host' },
               override:false,
               pino: {
-                level: 'debug' //env not working
-//                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+//                level: 'debug' //env not working
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
               },
               colored:true,
               formats: {
@@ -81,8 +81,8 @@ describe(`Leviathan Integration Plugin Testing`, ()=> {
 //            formats: { onPostStart: ':time :start :level :message :host' },
               override:false,
               pino: {
-//                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
-                level: 'debug'
+                level: process.env.PHOENIX_GATEWAY_TEST_LOG_LEVEL
+//                level: 'debug'
               },
               colored:true,
               formats: {
