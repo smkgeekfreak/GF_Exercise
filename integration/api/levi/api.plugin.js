@@ -56,7 +56,7 @@ const getEmployees = (routeOptions) => {
     method:  'GET',
     path:    '/employees',
     options: {
-//      isInternal:true, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
+      isInternal:true, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
 //      tags:        ['internal'], // include 'api' tag to show in swagger
       tags:    ['api', 'get'],
       handler: {

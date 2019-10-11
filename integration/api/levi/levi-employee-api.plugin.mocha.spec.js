@@ -14,7 +14,7 @@ let getServer = async (manifest) => {
   return server;
 };
 describe(`Employee API - Levi Plugin Unit Testing`, ()=> {
-  it.skip('Call /employees', async () => {
+  it('Call /employees', async () => {
     const TestManifest = {
       server:   {
         host: '127.0.0.1',

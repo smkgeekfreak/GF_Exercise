@@ -1,5 +1,6 @@
 'use strict';
 const Package = require('../package.json');
+const Logger = require('../logger')("phoenix-gateway-server",process.env.PHOENIX_GATEWAY_SERVER_LOG_LEVEL);
 
 module.exports = {
   server:   {
@@ -35,47 +36,30 @@ module.exports = {
             indent: 0
           },
       },
-//      {
-//        plugin: 'blipp'
-//      },
-//      // Static file and directory handlers
-//      {
-//        plugin: '@hapi/inert'
-//      },
-//      {
-//        plugin: '@hapi/vision'
-//      },
-//      // App context decorator
-//      {
-//        plugin:  'hapi-swagger',
-//        options: {
-//          info: {
-//            title:   'Test API Documentation',
-//            version: Package.version,
-//          },
-////          grouping: 'tags',
-////          tags:     [
-////            {
-////              name:        'users',
-////              description: 'Users data'
-////            },
-////            {
-////              name:         'store',
-////              description:  'Storing a sum',
-////              externalDocs: {
-////                description: 'Find out more about storage',
-////                url:         'http://example.org'
-////              }
-////            },]
-////        }
-//        },
-////        host:    process.env.SWAGGER_HOST,
-//      },
-
-
+      {
+        plugin: 'blipp'
+      },
+      // Static file and directory handlers
+      {
+        plugin: '@hapi/inert'
+      },
+      {
+        plugin: '@hapi/vision'
+      },
+      // App context decorator
+      {
+        plugin:  'hapi-swagger',
+        options: {
+          info: {
+            title:   'Test API Documentation',
+            version: Package.version,
+          },
+//          grouping: 'tags',
+        },
+      },
 //      //**************************************************************
 //      //                                                             *
-//      //                      APPLICATION PLUGINGS                   *
+//      //                      APPLICATION PLUGINS                   *
 //      //                                                             *
 //      //**************************************************************
 //
@@ -92,6 +76,24 @@ module.exports = {
 //                ApiKey:"CHALLENGEKEY"    // TODO: get from .env
 //              },
           baseURL: 'https://leviathan.challenge.growflow.com'
+        }
+      },
+      {
+        plugin:  './integration/service/leviathan/index.js',
+      },
+      {
+        plugin:  './service/employees/index.js',
+        options: {
+          writeModel: new(require('../repo/employeeWriterDB'))(Logger),
+        }
+      },
+      {
+        plugin:  './api/employees/index.js',
+        routes:  {
+          prefix: '/employees'
+        },
+        options: {
+          writeModel: new(require('../repo/employeeWriterDB'))(Logger),
         }
       },
     ]

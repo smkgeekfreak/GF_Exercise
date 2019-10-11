@@ -63,7 +63,7 @@ const getEmployees = (routeOptions) => {
     options: {
       tags:    ['employee','api', 'get'],
       handler: function (request, h) {
-        return {"info": {version: pkg.version}, "user": options.name};
+        return {"info": {version: pkg.version}};
       }
     },
   }
@@ -86,6 +86,7 @@ const addEmployee= (routeOptions) => {
       handler: async function (request, h) {
         request.log('debug',"add employee handler");
         request.log('debug',routeOptions);
+        //replace with command to employees service
         const employeeWriter = new WriteRepo({writeModel: routeOptions.writeModel});
         await employeeWriter.create({
           email:'phoenixapi@hired.com',
