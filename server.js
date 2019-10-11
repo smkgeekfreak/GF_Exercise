@@ -17,7 +17,8 @@ const start = async () => {
       method:  'GET',
       path:    '/',
       handler: (request, h) => {
-        return 'Hello, world!';
+        return h.redirect('/documentation')
+//        return 'Hello, world!';
       }
     });
     server.log('debug', '-d gets logged');
