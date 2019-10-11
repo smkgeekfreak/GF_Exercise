@@ -2,10 +2,13 @@
 const Joi = require('@hapi/joi');
 const pkg = require('./package');
 const Wreck = require('@hapi/wreck');
+const WriteRepo = require('../../repo/writeRepo')
 
 /**
- * Temporary solution to give server logger to route setup functions
+ * Temporary fix to store server and service for use outside register. There's
+ * a better way to do this but it will take a little rework
  */
+let _service;
 let _server;
 //TODO: could move route definitions to separate files to reduce clutter
 /**
@@ -19,10 +22,10 @@ const pingRoute = (routeOptions) => {
     method:  'GET',
     path:    '/ping',
     options: {
-      isInternal:  false, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
+      isInternal:false,
       description: `Returns ping for ${pkg.name}`,
       notes:       "Returns a ping response",
-      tags:        ['internal', 'api'], // include 'api' tag to show in swagger
+      tags:        ['api'], // include 'api' tag to show in swagger
       handler:     function (request, h) {
         return {"info": {version: pkg.version}, "message": "PONG"};
       },
@@ -51,37 +54,42 @@ const pingRoute = (routeOptions) => {
  * @returns {{path: string, method: string, options: {handler: {proxy: {onResponse: (function(*, *=, *, *, *, *): {payload: *, statusCode: *}), mapUri: (function(*): {uri: string})}}, tags: string[]}}}
  */
 const getEmployees = (routeOptions) => {
+  _server.log('debug','getemployees');
+  _server.log('debug',routeOptions);
   //TODO: Add routeOptions for user/key
   return {
     method:  'GET',
-    path:    '/employees',
+    path:    '/',
     options: {
-      isInternal:true, // DON'T EXPOSE to external clients will return 404 except from server.inject calls
-//      tags:        ['internal'], // include 'api' tag to show in swagger
-      tags:    ['api', 'get'],
-      handler: {
-        proxy: {
-//          passThrough: true, //
-          mapUri:     function (request) {
-            _server.logger().debug('doing some additional stuff before redirecting');
-            let {path, headers} = request;
-            const uri = `${routeOptions.baseURL}/employee/?ApiUser=${headers.apiuser}&ApiKey=${headers.apikey}`
-            _server.logger().info(uri)
-            return {
-              uri: uri
-            }
-          },
-          onResponse: async function (err, res, request, h, settings, ttl) {
-            let {headers} = request;
-            _server.logger().debug('receiving the response from the upstream.');
-            const payload = await Wreck.read(res, {json: true, timeout: 500});
-            return {statusCode: res.statusCode, payload: payload, headers: res.headers};
-//              const response = h.response(payload);
-//              response.headers = res.headers;
-//              return response;
-//            });
-          }
-        }
+      tags:    ['employee','api', 'get'],
+      handler: function (request, h) {
+        return {"info": {version: pkg.version}};
+      }
+    },
+  }
+}
+/**
+ *
+ * @param routeOptions
+ * @returns {{path: string, method: string, options: {handler: (function(*, *): string), tags: string[]}}}
+ */
+const addEmployee= (routeOptions) => {
+  //TODO: Add routeOptions validate for writeModel
+  if (!routeOptions || !routeOptions.writeModel) {
+    throw new Error('routeOptions must include writeModel ');
+  }
+  return {
+    method:  'POST',
+    path:    '/',
+    options: {
+      tags:    ['api', 'post'],
+      handler: async function (request, h) {
+        request.log('debug',"add employee handler");
+        request.log('debug',routeOptions);
+        //DONE: replace with command to employees service
+        const result = await _server.plugins['Service.Employees'].addEmployees({name:"not used yet"})
+        _server.logger().debug(pkg.name, result);
+        return result;
       }
     },
   }
@@ -89,23 +97,26 @@ const getEmployees = (routeOptions) => {
 
 const register = async (server, options) => {
   _server = server;
-  server.logger().debug(JSON.stringify(options))
-  let routes = [];
+  server.logger().debug('register')
+  _server.logger().debug('re-register')
+  _service = options.service;
+  await server.register(require('@hapi/h2o2'), { once: true });
+  server.dependency(['Service.Employees']);
   //Push all
-  await server.register(require('@hapi/h2o2'), {once: true});
+  let routes = [];
   routes.push(pingRoute());
   routes.push(getEmployees(options));
-//  routes.push(createOrderRoute({writeModel:options.writeModel}));
+  routes.push(addEmployee({writeModel:options.writeModel}));
   // Load all routes into server
   server.route(routes);
 
   await server.expose('describe', async () => {
-    server.logger().debug(`expose yourself to something else in ${options.name}`)
+    server.log('debug', `expose yourself to something else in ${options.name}`)
     return {}
   });
 }
 
-function ApiPlugin(pkg) {
+function ApiPlugin (pkg) {
   return {
     pkg:      pkg,
     register: register,

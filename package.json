@@ -6,14 +6,15 @@
   "scripts": {
     "start": "nodemon -e js,json,.env server.js",
     "mocha-cov": "nyc mocha './**/*.mocha.spec.js'",
-    "mocha": "mocha --reporter spec './**/*.mocha.spec.js' --watch",
-    "test": "mocha --reporter spec './**/*.mocha.spec.js'"
+    "mocha": "env-cmd mocha --reporter spec './**/*.mocha.spec.js' --watch",
+    "test": "env-cmd mocha --reporter spec './**/*.mocha.spec.js'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "chai": "^4.2.0",
+    "env-cmd": "^10.0.1",
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
     "nyc": "^14.1.1",
@@ -23,7 +24,15 @@
     "@hapi/glue": "^6.2.0",
     "@hapi/h2o2": "^8.3.2",
     "@hapi/hapi": "^18.4.0",
+    "@hapi/inert": "^5.2.2",
+    "@hapi/podium": "^3.4.2",
+    "@hapi/vision": "^5.5.4",
     "@hapi/wreck": "^15.1.0",
-    "dotenv": "^8.1.0"
+    "blipp": "^4.0.1",
+    "dotenv": "^8.1.0",
+    "hapi-swagger": "^10.1.2",
+    "laabr": "^5.1.2",
+    "mongoose": "^5.7.4",
+    "uuid": "^3.3.3"
   }
 }
