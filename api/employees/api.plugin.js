@@ -86,17 +86,10 @@ const addEmployee= (routeOptions) => {
       handler: async function (request, h) {
         request.log('debug',"add employee handler");
         request.log('debug',routeOptions);
-        //replace with command to employees service
-        const employeeWriter = new WriteRepo({writeModel: routeOptions.writeModel});
-        await employeeWriter.create({
-          email:'phoenixapi@hired.com',
-          id:' d643e381-df8c-43b2-844e-d816baca5828',
-          role:'new employee',
-          telephone: '615-540-4550',
-          lastName:  'phoenix',
-          firstName:'employees endpoint'
-        });
-        return 'success';
+        //DONE: replace with command to employees service
+        const result = await _server.plugins['Service.Employees'].addEmployees({name:"not used yet"})
+        _server.logger().debug(pkg.name, result);
+        return result;
       }
     },
   }
@@ -108,6 +101,7 @@ const register = async (server, options) => {
   _server.logger().debug('re-register')
   _service = options.service;
   await server.register(require('@hapi/h2o2'), { once: true });
+  server.dependency(['Service.Employees']);
   //Push all
   let routes = [];
   routes.push(pingRoute());

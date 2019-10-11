@@ -40,6 +40,12 @@ describe(`Employees Writes - Phoenix API Plugin Unit Testing`, ()=> {
             },
           },
           {
+            plugin:'../../service/employees/index.js',
+            options: {
+              writeModel: new(require('../../repo/employeeWriterDB'))(Logger)
+            }
+          },
+          {
             plugin:  './index.js',
 //            dependencies: '@hapi/h2o2',
             routes:  {
@@ -47,7 +53,7 @@ describe(`Employees Writes - Phoenix API Plugin Unit Testing`, ()=> {
             },
             options: {
               writeModel: new(require('../../repo/employeeWriterDB'))(Logger),
-              service: require('../../integration/service/leviathan')
+//              service: require('../../integration/service/leviathan')
             }
           },
         ]
@@ -74,7 +80,6 @@ describe(`Employees Writes - Phoenix API Plugin Unit Testing`, ()=> {
     },);
 
     expect(response.statusCode).to.equal(200);
-    expect(response.result).to.equal('success');
 //    expect(response.result.payload[0]).to.include.keys(['email', 'id', 'role', 'telephone', 'lastName', 'firstName']);
   });
 
