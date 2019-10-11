@@ -115,7 +115,7 @@ describe('eventStore-sample', async () => {
     emitter.registerEvent('newEvent2');
     await emitter.emit('newEvent2',  {name:"userApproved", payload:{user: {name:'shockey'}}});
     Logger.debug(JSON.stringify(EventStore.Store,null, 2));
-    await EventStore.emit('newEvent2', {name:"userAddRequested", payload:{user: {name:'shawn'}}});
+    await EventStore.emit('newEvent2', {name:"EStore-userAddRequested", payload:{user: {name:'shawn'}}});
     Logger.debug(JSON.stringify(EventStore.Store,null, 2));
   });
 });

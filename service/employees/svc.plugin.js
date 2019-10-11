@@ -1,12 +1,19 @@
+/*************
+ * @name Employees domain service plugin
+ * @description Exposes and handles(or routes) commands related to employess
+ */
 'use strict';
 const Joi = require('@hapi/joi');
 const pkg = require('./package');
 const Wreck = require('@hapi/wreck');
 const WriteRepo = require('../../repo/writeRepo')
+const Events = require('../../events/events')
+const EventStore = require('../../events/eventStore');
 
 const register = async (server, options) => {
   server.logger().debug(`options = ${JSON.stringify(options)}`)
   //TODO: Add routeOptions validate for writeModel
+  //TODO: Add routeOptions validate for eventEmitter
   if (!options || !options.writeModel) {
     throw new Error('routeOptions must include writeModel ');
   }
@@ -17,23 +24,32 @@ const register = async (server, options) => {
       if (!options || !options.writeModel) {
         throw new Error('routeOptions must include writeModel ');
       }
-      server.logger().debug(`expose a wreck with  ${JSON.stringify(data)}`)
-      const employeeWriter = new WriteRepo({writeModel: options.writeModel});
-      await employeeWriter.create({
+      //TODO: replace this with data passed in
+      data = {
         email:'shawn@hired.com',
-        id:' d643e381-df8c-43b2-844e-d816baca5828',
+        id:' a643e681-df8c-43b2-854e-d816baca5827',
         role:'new employee',
         telephone: '615-540-4550',
-        lastName:  'aname',
-        firstName:'bname'
-      });
-      //
+        lastName:  'aname ' +Math.random(),
+        firstName:'bname ' +Math.random()
+      }
+
+      // Register events with eventStore
+      // DONE: Need to register outside here
+//      await EventStore.registerNewChannel(Events.EVENT_PHOENIX_EMPLOYEES_ADDED );
+      server.logger().debug(`expose a wreck with  ${JSON.stringify(data)}`)
+
+      const employeeWriter = new WriteRepo({writeModel: options.writeModel});
+      const result = await employeeWriter.create(data);
       // TODO: Send event for employee added
       // emit('Employee.Added', { data })
-      return 'success';
+      await EventStore.emit(Events.EVENT_PHOENIX_EMPLOYEES_ADDED, data);
+      server.logger().debug('store it', EventStore.Store);
+
+      return result;
     } catch (writerError) {
       // emit('Employee.AddFailed', { data }) ???
-      server.logger().debug(writerError);
+      server.logger().error(writerError);
     }
   });
 

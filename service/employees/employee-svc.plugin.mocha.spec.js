@@ -65,7 +65,7 @@ describe(`Employee Service Plugin Testing`, ()=> {
     expect(server.plugins[pkgName]).to.include.keys(['describe'] );
   });
 
-  it('Call plugin getEmployees', async () => {
+  it('Call plugin addEmployees', async () => {
     const TestManifest= {
       server:   {
         host: '127.0.0.1',
@@ -111,8 +111,10 @@ describe(`Employee Service Plugin Testing`, ()=> {
     expect(server.plugins[pkgName]).to.include.keys(['addEmployees']);
 
     const response = await server.plugins[pkgName].addEmployees({"name":"my"});
-    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
-//    expect(response.statusCode).to.equal(200);
+    Logger.debug (response);
+//    Logger.debug(`resp: ${JSON.stringify(response.payload,null, 2)}`);
+    //TODO: Add test to listen to event emitted
+    expect(response.statusCode).to.equal('success');
 //    expect(response.payload.length).to.be.gt(0);
 //    expect(response.payload[0]).to.include.keys(['email', 'id','role', 'telephone','lastName','firstName']);
 //    expect(response.payload).to.include.keys(['userId', 'completed']);

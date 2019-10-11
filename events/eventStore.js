@@ -13,9 +13,8 @@ const _emitterSource = new Podium({name: 'eventStore', channels: ['eventOccurred
 const __Handle = _emitterSource.addListener('eventStore', () => {
 })
 
-
 /**
- * Internal in memory storage for events
+ * Internal in memory storage for events - TODO:temporary
  * @type {Array}
  * @private
  */
@@ -25,8 +24,10 @@ const _eventStore = [];
  * Handler to listen for eventOccurred as add to the
  */
 const _handler = _emitterSource.on('eventStore', (data) => {
-  Logger.debug(`called external ${Date.now()}`);
+  Logger.debug(`Received event on ${Date.now()} with ${data} `);
+  //TODO:replace this with Message Queue or DB
   _eventStore.push(createEventData(data));
+
 });
 
 /**
@@ -45,7 +46,9 @@ const _register = async (eventName, options, handler) => {
 
     await _emitterSource.on(eventName, (data) => {
       Logger.debug("EmitterSource handler proxy");
-      _eventStore.push(createEventData(data));
+      Logger.debug(`${eventName}: ${JSON.stringify(data)} `);
+      //TODO:replace this with Message Queue or DB
+      _eventStore.push(createEventData(eventName, data));
       if (handler && typeof handler == "function") {
         Logger.debug("GOT HERE")
         handler(data);
@@ -56,15 +59,30 @@ const _register = async (eventName, options, handler) => {
   }
 }
 
-function createEventData(data) {
+function createEventData(eventName, data) {
   return {
     id:      uuid(),
-    name:    data.name,
+    name:    eventName,
     stamp:   Date.now(),
-    payload: data.payload,
+    payload: data,
   }
 }
 
+const initStore = async () => {
+  try {
+    const Events = require('./events');
+    if (Events) {
+      for (const event of Object.keys(Events)) {
+        Logger.debug(Events[event]);
+        await _register(Events[event]);
+      }
+    }
+  } catch (eventsErr) {
+    Logger.error(eventsErr);
+    throw eventsErr;
+  }
+};
+initStore();
 module.exports = _emitterSource;
 module.exports.Store = _eventStore;
 module.exports.registerNewChannel = _register;

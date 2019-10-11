@@ -29,21 +29,26 @@ class employeeWriterDB {
   }
 
   async create(data) {
-    this._logger.debug(`create employee with ${JSON.stringify(data)}`);
-    const connection = await mongoose.connect(this._connectionString, mgOptions );
-    this._logger.debug('connected');
-    // Clear the database every time. This is for the sake of example only,
-    // don't do this in prod :)
+    try {
+      this._logger.debug(`create employee with ${JSON.stringify(data)}`);
+      const connection = await mongoose.connect(this._connectionString, mgOptions);
+      this._logger.debug('connected');
+      // Clear the database every time. This is for the sake of example only,
+      // don't do this in prod :)
 //    await mongoose.connection.dropDatabase();
 
-    const mgEmployeeModel = mongoose.connection.model('Employee', employeeSchema);
-    await mgEmployeeModel.create(data);
-    // Find all employees
-    const ees = await mgEmployeeModel.find();
-    this._logger.debug((ees));
-    await mongoose.disconnect();
-    this._logger.debug('disconnected');
-    return 'success'
+      const mgEmployeeModel = mongoose.connection.model('Employee', employeeSchema);
+      await mgEmployeeModel.create(data);
+      // Find all employees
+      //TODO: Testing only
+//      const ees = await mgEmployeeModel.find();
+//      this._logger.debug((ees));
+      await mongoose.disconnect();
+      this._logger.debug('disconnected');
+        return { statusCode:'success' }
+    } catch (writeErr) {
+      return { statusCode:'failed', message:writeErr}
+    }
   }
 
   async update(data) {
