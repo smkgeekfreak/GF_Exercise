@@ -12,7 +12,7 @@ Layered desgin to abstract the client facing "Phoenix" API away from the list of
   + Event Store
 + [Integrations - 3rd Party](#integrations)
   + [Service(s)](#integration-services)
-  + [API(s)] (#integration-apis)
+  + [API(s)](#integration-apis)
 ### Client APIs
 Restful or CQRS type interfaces provided for application or client use. These apis exchange messages (comamands/querries) directly with domain services.
 ### Domain Services
