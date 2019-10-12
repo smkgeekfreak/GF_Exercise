@@ -33,6 +33,6 @@ This event could be subscribed to by a 3rd-party integration service (Leviathan)
 Provides a abstraction to manage business rule related to 3rd-party integrations
 ### Integration APIs
 Provide interation with 3rd-party API(s). These can be hosted similar to the Client API(s) and then protected as "internal-only" resouces. 
-> With Hapijs
+> With Hapijs you can mark routes as isInternal which only allows access from internal calls via the server.inject method.
 ## Design Diagram
 ![Alt text](design.jpeg?raw=true "Title:Design Diagram")
