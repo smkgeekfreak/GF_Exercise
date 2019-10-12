@@ -1,6 +1,6 @@
 # GF_Exercise
 ## GF Coding Exercise Design
-Layered desgin to abstract the system provide "Phoenix" APi away from the list of actions the are taken for each endpoint.
+Layered desgin to abstract the client facing "Phoenix" API away from the list of actions the are taken from each endpoint.
 [Diagram](#design-diagram)
 ## Layers
 + [Client API(s)](#client-apis)
